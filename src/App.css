@@ -949,6 +949,9 @@
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 4px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 .category-hindi {
@@ -956,6 +959,9 @@
   font-size: 0.85rem;
   color: #64748b;
   margin-bottom: 4px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 .subcategory-count {
@@ -1022,8 +1028,95 @@
 }
 
 @media (max-width: 768px) {
-  .subcategories-grid {
-    grid-template-columns: 1fr;
+  .category-card {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .category-card .category-icon {
+    font-size: 2rem;
+    width: 50px;
+    height: 50px;
+    flex-shrink: 0;
+  }
+
+  .category-card .category-info h3 {
+    font-size: 0.95rem;
+  }
+
+  .category-hindi {
+    font-size: 0.75rem;
+  }
+
+  .subcategory-count {
+    font-size: 0.7rem;
+  }
+
+  .category-arrow {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .category-card {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .category-card .category-icon {
+    font-size: 1.5rem;
+    width: 45px;
+    height: 45px;
+  }
+
+  .category-card .category-info h3 {
+    font-size: 0.85rem;
+  }
+
+  .category-hindi {
+    font-size: 0.7rem;
+  }
+
+  .subcategory-card {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .subcategory-folder {
+    font-size: 1.5rem;
+    width: 45px;
+    height: 45px;
+    flex-shrink: 0;
+  }
+
+  .subcategory-info h4 {
+    font-size: 0.9rem;
+  }
+
+  .subcategory-hindi {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .subcategory-card {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .subcategory-folder {
+    font-size: 1.2rem;
+    width: 40px;
+    height: 40px;
+  }
+
+  .subcategory-info h4 {
+    font-size: 0.8rem;
+  }
+
+  .subcategory-hindi {
+    font-size: 0.7rem;
   }
 }
 
@@ -1067,11 +1160,17 @@
   font-size: 1rem;
   font-weight: 600;
   margin-bottom: 2px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 .subcategory-hindi {
   font-size: 0.8rem;
   color: #64748b;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 .subcategory-meta {
