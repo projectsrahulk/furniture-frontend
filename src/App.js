@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { BrowserRouter, Routes, Route, NavLink, useParams, useNavigate, Navigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -309,6 +309,7 @@ function ConfirmModal({
 }
 
 // ========== SIMPLE ALERT MODAL ==========
+// eslint-disable-next-line no-unused-vars
 function AlertModal({ isOpen, onClose, title, message, type = 'info' }) {
   if (!isOpen) return null;
 
@@ -1296,11 +1297,7 @@ function CategoryDetailPage({ categories, files, onRefresh }) {
   const [deleteSubInfo, setDeleteSubInfo] = useState(null);
   const [subToDelete, setSubToDelete] = useState(null);
 
-  useEffect(() => {
-    loadCategory();
-  }, [categoryId, loadCategory]);
-
-  const loadCategory = async () => {
+  const loadCategory = useCallback(async () => {
     setLoading(true);
     try {
       const data = await categoryAPI.getById(categoryId);
@@ -1309,7 +1306,11 @@ function CategoryDetailPage({ categories, files, onRefresh }) {
       toast.error('Failed to load category');
     }
     setLoading(false);
-  };
+  }, [categoryId]);
+
+  useEffect(() => {
+    loadCategory();
+  }, [categoryId, loadCategory]);
 
   const getFileCount = (subId) => {
     return files.filter(f => f.subcategoryId === subId).length;
@@ -2142,7 +2143,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [globalUploadOpen, setGlobalUploadOpen] = useState(false);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (!isAuthenticated) {
       setLoading(false);
       return;
@@ -2159,7 +2160,7 @@ function App() {
       console.error('Load data error:', error);
     }
     setLoading(false);
-  };
+  }, [isAuthenticated]);
 
   useEffect(() => {
     loadData();
