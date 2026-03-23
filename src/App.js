@@ -1298,7 +1298,7 @@ function CategoryDetailPage({ categories, files, onRefresh }) {
 
   useEffect(() => {
     loadCategory();
-  }, [categoryId]);
+  }, [categoryId, loadCategory]);
 
   const loadCategory = async () => {
     setLoading(true);
@@ -2163,7 +2163,7 @@ function App() {
 
   useEffect(() => {
     loadData();
-  }, [isAuthenticated]);
+  }, [isAuthenticated, loadData]);
 
   const handleLogin = (userData) => {
     setUser(userData);
