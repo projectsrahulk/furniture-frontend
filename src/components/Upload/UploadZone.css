@@ -1,0 +1,59 @@
+.spartan-upload-zone {
+  background: rgba(255, 255, 255, 0.5);
+  border: 2px dashed #CBD5E1;
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.spartan-upload-zone:hover, .spartan-upload-zone.active {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.05);
+  transform: scale(0.99);
+}
+
+.upload-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon-wrapper {
+  width: 64px;
+  height: 64px;
+  background: white;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-md);
+  color: var(--primary);
+  margin-bottom: 8px;
+  transition: transform 0.3s;
+}
+
+.spartan-upload-zone:hover .icon-wrapper {
+  transform: translateY(-5px);
+  color: var(--accent);
+}
+
+.icon-wrapper svg {
+  width: 32px;
+  height: 32px;
+}
+
+.spartan-upload-zone h3 {
+  font-size: 1.2rem;
+  color: var(--text-main);
+}
+
+.spartan-upload-zone p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
