@@ -36,8 +36,9 @@ api.interceptors.response.use(
 );
 
 const MAX_IMAGE_UPLOAD_SIZE = 10 * 1024 * 1024;
-const MAX_IMAGE_WIDTH = 1280;
-const MAX_IMAGE_HEIGHT = 720;
+const TARGET_IMAGE_UPLOAD_SIZE = 8 * 1024 * 1024;
+const MIN_IMAGE_UPLOAD_SIZE = 3 * 1024 * 1024;
+const MAX_IMAGE_DIMENSION = 3200;
 
 const loadImage = (file) => new Promise((resolve, reject) => {
   const objectUrl = URL.createObjectURL(file);
@@ -73,40 +74,55 @@ const compressImageIfNeeded = async (file) => {
   }
 
   const image = await loadImage(file);
-  const scale = Math.min(1, MAX_IMAGE_WIDTH / image.width, MAX_IMAGE_HEIGHT / image.height);
-  const width = Math.max(1, Math.round(image.width * scale));
-  const height = Math.max(1, Math.round(image.height * scale));
-
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-
-  const context = canvas.getContext('2d');
-  if (!context) {
-    return file;
-  }
-
-  context.imageSmoothingEnabled = true;
-  context.imageSmoothingQuality = 'high';
-  context.drawImage(image, 0, 0, width, height);
-
+  const longestSide = Math.max(image.width, image.height);
+  const baseScale = Math.min(1, MAX_IMAGE_DIMENSION / longestSide);
+  const scaleSteps = [1, 0.95, 0.9, 0.85, 0.8, 0.75];
   const mimeType = file.type === 'image/png' || file.type === 'image/webp'
     ? 'image/webp'
     : 'image/jpeg';
   const qualityLevels = mimeType === 'image/webp'
-    ? [0.88, 0.82, 0.76, 0.7]
-    : [0.86, 0.8, 0.74, 0.68];
+    ? [0.98, 0.96, 0.94, 0.92, 0.9, 0.88]
+    : [0.97, 0.95, 0.93, 0.91, 0.89, 0.87];
 
-  let compressedBlob = null;
+  let bestCandidate = null;
 
-  for (const quality of qualityLevels) {
-    compressedBlob = await canvasToBlob(canvas, mimeType, quality);
-    if (compressedBlob.size <= MAX_IMAGE_UPLOAD_SIZE) {
+  for (const step of scaleSteps) {
+    const scale = Math.min(1, baseScale * step);
+    const width = Math.max(1, Math.round(image.width * scale));
+    const height = Math.max(1, Math.round(image.height * scale));
+
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+
+    const context = canvas.getContext('2d');
+    if (!context) {
+      return file;
+    }
+
+    context.imageSmoothingEnabled = true;
+    context.imageSmoothingQuality = 'high';
+    context.drawImage(image, 0, 0, width, height);
+
+    for (const quality of qualityLevels) {
+      const blob = await canvasToBlob(canvas, mimeType, quality);
+
+      if (blob.size <= MAX_IMAGE_UPLOAD_SIZE && (!bestCandidate || blob.size > bestCandidate.size)) {
+        bestCandidate = { blob, size: blob.size, width, height };
+      }
+
+      if (blob.size >= MIN_IMAGE_UPLOAD_SIZE && blob.size <= TARGET_IMAGE_UPLOAD_SIZE) {
+        bestCandidate = { blob, size: blob.size, width, height };
+        break;
+      }
+    }
+
+    if (bestCandidate && bestCandidate.size >= MIN_IMAGE_UPLOAD_SIZE && bestCandidate.size <= TARGET_IMAGE_UPLOAD_SIZE) {
       break;
     }
   }
 
-  if (!compressedBlob) {
+  if (!bestCandidate) {
     return file;
   }
 
@@ -115,7 +131,7 @@ const compressImageIfNeeded = async (file) => {
     ? file.name.replace(/\.[^.]+$/, extension)
     : `${file.name}${extension}`;
 
-  return new File([compressedBlob], fileName, {
+  return new File([bestCandidate.blob], fileName, {
     type: mimeType,
     lastModified: file.lastModified
   });
