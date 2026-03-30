@@ -35,6 +35,92 @@ api.interceptors.response.use(
   }
 );
 
+const MAX_IMAGE_UPLOAD_SIZE = 10 * 1024 * 1024;
+const MAX_IMAGE_WIDTH = 1280;
+const MAX_IMAGE_HEIGHT = 720;
+
+const loadImage = (file) => new Promise((resolve, reject) => {
+  const objectUrl = URL.createObjectURL(file);
+  const image = new Image();
+
+  image.onload = () => {
+    URL.revokeObjectURL(objectUrl);
+    resolve(image);
+  };
+
+  image.onerror = () => {
+    URL.revokeObjectURL(objectUrl);
+    reject(new Error('Unable to process image for upload.'));
+  };
+
+  image.src = objectUrl;
+});
+
+const canvasToBlob = (canvas, mimeType, quality) => new Promise((resolve, reject) => {
+  canvas.toBlob((blob) => {
+    if (blob) {
+      resolve(blob);
+      return;
+    }
+
+    reject(new Error('Unable to compress image for upload.'));
+  }, mimeType, quality);
+});
+
+const compressImageIfNeeded = async (file) => {
+  if (!(file instanceof File) || !file.type.startsWith('image/') || file.size <= MAX_IMAGE_UPLOAD_SIZE) {
+    return file;
+  }
+
+  const image = await loadImage(file);
+  const scale = Math.min(1, MAX_IMAGE_WIDTH / image.width, MAX_IMAGE_HEIGHT / image.height);
+  const width = Math.max(1, Math.round(image.width * scale));
+  const height = Math.max(1, Math.round(image.height * scale));
+
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+
+  const context = canvas.getContext('2d');
+  if (!context) {
+    return file;
+  }
+
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = 'high';
+  context.drawImage(image, 0, 0, width, height);
+
+  const mimeType = file.type === 'image/png' || file.type === 'image/webp'
+    ? 'image/webp'
+    : 'image/jpeg';
+  const qualityLevels = mimeType === 'image/webp'
+    ? [0.88, 0.82, 0.76, 0.7]
+    : [0.86, 0.8, 0.74, 0.68];
+
+  let compressedBlob = null;
+
+  for (const quality of qualityLevels) {
+    compressedBlob = await canvasToBlob(canvas, mimeType, quality);
+    if (compressedBlob.size <= MAX_IMAGE_UPLOAD_SIZE) {
+      break;
+    }
+  }
+
+  if (!compressedBlob) {
+    return file;
+  }
+
+  const extension = mimeType === 'image/webp' ? '.webp' : '.jpg';
+  const fileName = file.name.includes('.')
+    ? file.name.replace(/\.[^.]+$/, extension)
+    : `${file.name}${extension}`;
+
+  return new File([compressedBlob], fileName, {
+    type: mimeType,
+    lastModified: file.lastModified
+  });
+};
+
 // ============ AUTH API ============
 export const authAPI = {
   register: async (data) => {
@@ -153,10 +239,20 @@ export const fileAPI = {
   },
 
   upload: async (formData, onProgress) => {
+    const file = formData.get('file');
+
+    if (file instanceof File) {
+      const compressedFile = await compressImageIfNeeded(file);
+      if (compressedFile !== file) {
+        formData.set('file', compressedFile);
+      }
+    }
+
     const response = await api.post('/files/upload', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       onUploadProgress: (progressEvent) => {
-        const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        const total = progressEvent.total || 1;
+        const progress = Math.round((progressEvent.loaded * 100) / total);
         onProgress?.(progress);
       }
     });
