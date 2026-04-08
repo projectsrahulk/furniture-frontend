@@ -4,7 +4,7 @@ import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import './Catalog.css';
 
-const FileCard = ({ file, onDelete, onRestore, isTrash, isSelected, onSelect, showCheckbox }) => {
+const FileCard = ({ file, onDelete, onRestore, isTrash, isSelected, onSelect, showCheckbox, onOpenGallery }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
@@ -26,6 +26,8 @@ const FileCard = ({ file, onDelete, onRestore, isTrash, isSelected, onSelect, sh
           effect="blur"
           className="file-image"
           afterLoad={() => setImageLoaded(true)}
+          onClick={() => onOpenGallery && onOpenGallery(file._id)}
+          style={{ cursor: onOpenGallery ? 'pointer' : 'default' }}
         />
         {!imageLoaded && <div className="image-skeleton" />}
       </div>
@@ -65,15 +67,13 @@ const FileCard = ({ file, onDelete, onRestore, isTrash, isSelected, onSelect, sh
           </>
         ) : (
           <>
-            <a
-              href={file.url}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
               className="btn-icon view"
-              title="View Full Size"
+              onClick={() => onOpenGallery && onOpenGallery(file._id)}
+              title="View in Gallery"
             >
               👁️
-            </a>
+            </button>
             <button
               className="btn-icon trash"
               onClick={() => onDelete(file._id)}

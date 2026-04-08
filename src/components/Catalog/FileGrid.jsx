@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { fileAPI } from '../../services/api';
 import FileCard from './FileCard';
+import ImageGalleryModal from '../Modal/ImageGalleryModal';
 import { toast } from 'react-toastify';
 import './Catalog.css';
 
@@ -10,6 +11,7 @@ const FileGrid = ({ folderId, searchQuery, refreshTrigger }) => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(null);
 
   const loadFiles = useCallback(async (pageNum = 1, reset = false) => {
     try {
@@ -52,6 +54,17 @@ const FileGrid = ({ folderId, searchQuery, refreshTrigger }) => {
     }
   };
 
+  const handleOpenGallery = (fileId) => {
+    const index = files.findIndex((f) => f._id === fileId);
+    if (index !== -1) {
+      setSelectedImageIndex(index);
+    }
+  };
+
+  const handleCloseGallery = () => {
+    setSelectedImageIndex(null);
+  };
+
   const fetchMoreData = () => {
     loadFiles(page + 1, false);
   };
@@ -69,23 +82,34 @@ const FileGrid = ({ folderId, searchQuery, refreshTrigger }) => {
   }
 
   return (
-    <InfiniteScroll
-      dataLength={files.length}
-      next={fetchMoreData}
-      hasMore={hasMore}
-      loader={<div className="loading">Loading more...</div>}
-      endMessage={<p className="end-message">You've seen all files!</p>}
-    >
-      <div className="file-grid">
-        {files.map((file) => (
-          <FileCard
-            key={file._id}
-            file={file}
-            onDelete={handleDelete}
-          />
-        ))}
-      </div>
-    </InfiniteScroll>
+    <>
+      <InfiniteScroll
+        dataLength={files.length}
+        next={fetchMoreData}
+        hasMore={hasMore}
+        loader={<div className="loading">Loading more...</div>}
+        endMessage={<p className="end-message">You've seen all files!</p>}
+      >
+        <div className="file-grid">
+          {files.map((file) => (
+            <FileCard
+              key={file._id}
+              file={file}
+              onDelete={handleDelete}
+              onOpenGallery={handleOpenGallery}
+            />
+          ))}
+        </div>
+      </InfiniteScroll>
+
+      {selectedImageIndex !== null && (
+        <ImageGalleryModal
+          images={files}
+          initialIndex={selectedImageIndex}
+          onClose={handleCloseGallery}
+        />
+      )}
+    </>
   );
 };
 

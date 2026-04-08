@@ -520,121 +520,129 @@ function UploadModal({ isOpen, onClose, categories, onUpload, preSelectedCategor
           <button className="modal-close" onClick={onClose}>✕</button>
         </div>
 
-        <div
-          className="modal-dropzone"
-          onClick={() => document.getElementById('modalFileInput').click()}
-        >
-          <input
-            type="file"
-            id="modalFileInput"
-            hidden
-            multiple
-            accept="image/*"
-            onChange={handleFileSelect}
-          />
-          <div className="dropzone-icon">📁</div>
-          <h3>Tap to select images</h3>
-          <p>PNG, JPG, WebP • Max 10MB each</p>
-        </div>
+        <div className="modal-body upload-modal-body">
+          <div
+            className="modal-dropzone"
+            onClick={() => document.getElementById('modalFileInput').click()}
+          >
+            <input
+              type="file"
+              id="modalFileInput"
+              hidden
+              multiple
+              accept="image/*"
+              onChange={handleFileSelect}
+            />
+            <div className="dropzone-icon">📁</div>
+            <h3>Tap to select images</h3>
+            <p>PNG, JPG, WebP • Max 10MB each</p>
+          </div>
 
-        {selectedFiles.length > 0 && (
-          <div className="selected-files">
-            <div className="selected-header">
-              <span>📎 {selectedFiles.length} file(s)</span>
-              <button className="clear-all-btn" onClick={() => setSelectedFiles([])}>
-                Clear All
-              </button>
-            </div>
-            <div className="files-preview-grid">
-              {selectedFiles.map(file => (
-                <div key={file.id} className="file-preview-item">
-                  <img src={file.preview} alt={file.name} />
-                  <button className="remove-file-btn" onClick={() => removeFile(file.id)}>✕</button>
-                  <div className="file-preview-info">
-                    <span className="preview-name">{file.name}</span>
+          {selectedFiles.length > 0 && (
+            <div className="selected-files">
+              <div className="selected-header">
+                <span>📎 {selectedFiles.length} file(s)</span>
+                <button className="clear-all-btn" onClick={() => setSelectedFiles([])}>
+                  Clear All
+                </button>
+              </div>
+              <div className="files-preview-grid">
+                {selectedFiles.map(file => (
+                  <div key={file.id} className="file-preview-item">
+                    <img src={file.preview} alt={file.name} />
+                    <button className="remove-file-btn" onClick={() => removeFile(file.id)}>✕</button>
+                    <div className="file-preview-info">
+                      <span className="preview-name">{file.name}</span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {!preSelectedCategory && (
-          <div className="category-section">
-            <h3>📁 Select Category</h3>
-            <SearchBar
-              value={categorySearch}
-              onChange={setCategorySearch}
-              placeholder="Search categories..."
-            />
-            <div className="category-select-grid">
-              {filteredCategories.map(cat => (
-                <button
-                  key={cat._id}
-                  className={`category-select-btn ${selectedCategory === cat._id ? 'selected' : ''}`}
-                  onClick={() => {
-                    setSelectedCategory(cat._id);
-                    setSelectedSubcategory('');
-                    setCategorySearch('');
-                    setSubcategorySearch('');
-                  }}
-                >
-                  <span className="cat-icon">{cat.icon}</span>
-                  <span className="cat-name">{cat.name}</span>
-                  <span className="cat-hindi">{cat.nameHindi}</span>
-                </button>
-              ))}
+          {!preSelectedCategory && (
+            <div className="category-section">
+              <h3>📁 Select Category</h3>
+              <SearchBar
+                value={categorySearch}
+                onChange={setCategorySearch}
+                placeholder="Search categories..."
+              />
+              <div className="category-select-grid">
+                {filteredCategories.map(cat => (
+                  <button
+                    key={cat._id}
+                    className={`category-select-btn ${selectedCategory === cat._id ? 'selected' : ''}`}
+                    onClick={() => {
+                      setSelectedCategory(cat._id);
+                      setSelectedSubcategory('');
+                      setCategorySearch('');
+                      setSubcategorySearch('');
+                    }}
+                  >
+                    <span className="cat-icon">{cat.icon}</span>
+                    <span className="cat-name">{cat.name}</span>
+                    <span className="cat-hindi">{cat.nameHindi}</span>
+                  </button>
+                ))}
+              </div>
+              {filteredCategories.length === 0 && categorySearch && (
+                <div className="no-results">No categories found matching "{categorySearch}"</div>
+              )}
             </div>
-            {filteredCategories.length === 0 && categorySearch && (
-              <div className="no-results">No categories found matching "{categorySearch}"</div>
-            )}
-          </div>
-        )}
+          )}
 
-        {(selectedCategory || preSelectedCategory) && !preSelectedSubcategory && currentCategory && (
-          <div className="category-section">
-            <h3>📂 Select Subcategory</h3>
-            <SearchBar
-              value={subcategorySearch}
-              onChange={setSubcategorySearch}
-              placeholder="Search subcategories..."
-            />
-            <div className="subcategory-chips">
-              {filteredSubcategories.map(sub => (
-                <button
-                  key={sub._id}
-                  className={`subcategory-chip ${selectedSubcategory === sub._id ? 'selected' : ''}`}
-                  onClick={() => setSelectedSubcategory(sub._id)}
-                >
-                  <span className="sub-name">{sub.name}</span>
-                  <span className="sub-hindi">{sub.nameHindi}</span>
-                </button>
-              ))}
+          {(selectedCategory || preSelectedCategory) && !preSelectedSubcategory && currentCategory && (
+            <div className="category-section">
+              <h3>📂 Select Subcategory</h3>
+              <SearchBar
+                value={subcategorySearch}
+                onChange={setSubcategorySearch}
+                placeholder="Search subcategories..."
+              />
+              <div className="subcategory-chips">
+                {filteredSubcategories.map(sub => (
+                  <button
+                    key={sub._id}
+                    className={`subcategory-chip ${selectedSubcategory === sub._id ? 'selected' : ''}`}
+                    onClick={() => setSelectedSubcategory(sub._id)}
+                  >
+                    <span className="sub-name">{sub.name}</span>
+                    <span className="sub-hindi">{sub.nameHindi}</span>
+                  </button>
+                ))}
+              </div>
+              {filteredSubcategories.length === 0 && subcategorySearch && (
+                <div className="no-results">No subcategories found matching "{subcategorySearch}"</div>
+              )}
             </div>
-            {filteredSubcategories.length === 0 && subcategorySearch && (
-              <div className="no-results">No subcategories found matching "{subcategorySearch}"</div>
-            )}
-          </div>
-        )}
+          )}
 
-        {preSelectedCategory && preSelectedSubcategory && (
-          <div className="preselected-info">
-            <span>📁 Uploading to:</span>
-            <strong>
-              {categories.find(c => c._id === preSelectedCategory)?.name} → {' '}
-              {categories.find(c => c._id === preSelectedCategory)?.subcategories?.find(s => s._id === preSelectedSubcategory)?.name}
-            </strong>
-          </div>
-        )}
-
-        {uploading && (
-          <div className="upload-progress">
-            <div className="progress-bar">
-              <div className="progress-fill" style={{ width: `${uploadProgress}%` }}></div>
+          {preSelectedCategory && preSelectedSubcategory && (
+            <div className="preselected-info">
+              <span>📁 Uploading to:</span>
+              <strong>
+                {categories.find(c => c._id === preSelectedCategory)?.name} → {' '}
+                {categories.find(c => c._id === preSelectedCategory)?.subcategories?.find(s => s._id === preSelectedSubcategory)?.name}
+              </strong>
             </div>
-            <span>{uploadProgress}%</span>
-          </div>
-        )}
+          )}
+
+          {uploading && (
+            <div className="upload-progress">
+              <div className="progress-bar">
+                <div className="progress-fill" style={{ width: `${uploadProgress}%` }}></div>
+              </div>
+              <span>{uploadProgress}%</span>
+            </div>
+          )}
+
+          {(!selectedCategory || !selectedSubcategory) && selectedFiles.length > 0 && (
+            <div className="upload-hint">
+              Please select a category and subcategory before uploading.
+            </div>
+          )}
+        </div>
 
         <div className="modal-footer">
           <button className="btn-secondary" onClick={onClose}>Cancel</button>
@@ -647,11 +655,6 @@ function UploadModal({ isOpen, onClose, categories, onUpload, preSelectedCategor
           </button>
         </div>
 
-        {(!selectedCategory || !selectedSubcategory) && selectedFiles.length > 0 && (
-          <div className="upload-hint">
-            Please select a category and subcategory before uploading.
-          </div>
-        )}
       </div>
     </div>
   );
