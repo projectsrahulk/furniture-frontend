@@ -42,18 +42,6 @@ const FileGrid = ({ folderId, searchQuery, refreshTrigger }) => {
     loadFiles(1, true);
   }, [folderId, searchQuery, refreshTrigger, loadFiles]);
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Move this file to trash?')) {
-      try {
-        await fileAPI.moveToTrash(id);
-        setFiles((prev) => prev.filter((f) => f._id !== id));
-        toast.success('File moved to trash');
-      } catch (error) {
-        toast.error('Failed to move file to trash');
-      }
-    }
-  };
-
   const handleOpenGallery = (fileId) => {
     const index = files.findIndex((f) => f._id === fileId);
     if (index !== -1) {
@@ -95,7 +83,6 @@ const FileGrid = ({ folderId, searchQuery, refreshTrigger }) => {
             <FileCard
               key={file._id}
               file={file}
-              onDelete={handleDelete}
               onOpenGallery={handleOpenGallery}
             />
           ))}
