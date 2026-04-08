@@ -51,14 +51,14 @@ const FileCard = ({ file, onDelete, onRestore, isTrash, isSelected, onSelect, sh
         {isTrash ? (
           <>
             <button
-              className="btn-icon restore"
+              className="action-btn restore"
               onClick={() => onRestore(file._id)}
               title="Restore"
             >
               ↺
             </button>
             <button
-              className="btn-icon delete"
+              className="action-btn delete"
               onClick={() => onDelete(file._id)}
               title="Delete Permanently"
             >
@@ -68,14 +68,7 @@ const FileCard = ({ file, onDelete, onRestore, isTrash, isSelected, onSelect, sh
         ) : (
           <>
             <button
-              className="btn-icon view"
-              onClick={() => onOpenGallery && onOpenGallery(file._id)}
-              title="View in Gallery"
-            >
-              👁️
-            </button>
-            <button
-              className="btn-icon trash"
+              className="action-btn trash"
               onClick={() => onDelete(file._id)}
               title="Move to Trash"
             >

@@ -1316,42 +1316,41 @@
 }
 
 .file-actions {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 140px;
-  background: rgba(0, 0, 0, 0.5);
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 12px;
-  opacity: 0;
-  transition: opacity 0.3s;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 10px 14px;
+  background: transparent;
+  opacity: 1;
+  transition: none;
 }
 
 @media (max-width: 768px) {
   .file-actions {
-    height: 120px;
+    padding: 8px 12px;
   }
 }
 
-.file-actions.show,
-.file-card:hover .file-actions {
-  opacity: 1;
-}
-
 .action-btn {
-  width: 48px;
-  height: 48px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   border: none;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+}
+
+.action-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
 }
 
 .action-btn:active {
